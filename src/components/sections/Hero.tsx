@@ -1,8 +1,29 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Brain, TrendingUp, FileText, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { blink } from '@/blink/client'
 
 export function Hero() {
+  const [user, setUser] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const unsubscribe = blink.auth.onAuthStateChanged((state) => {
+      setUser(state.user)
+    })
+    return unsubscribe
+  }, [])
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate('/dashboard')
+    } else {
+      blink.auth.login()
+    }
+  }
+
   const features = [
     { icon: Brain, label: 'AI Strategy' },
     { icon: TrendingUp, label: 'Financial Modeling' },
@@ -64,9 +85,10 @@ export function Hero() {
           >
             <Button 
               size="lg" 
+              onClick={handleGetStarted}
               className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg pulse-glow group"
             >
-              Start Free Consultation
+              {user ? 'Go to Dashboard' : 'Start Free Consultation'}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 

@@ -12,50 +12,77 @@ import {
   ArrowRight 
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { blink } from '@/blink/client'
 
 export function Features() {
+  const [user, setUser] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const unsubscribe = blink.auth.onAuthStateChanged((state) => {
+      setUser(state.user)
+    })
+    return unsubscribe
+  }, [])
+
+  const handleTryModule = (moduleRoute: string) => {
+    if (user) {
+      navigate(moduleRoute)
+    } else {
+      blink.auth.login()
+    }
+  }
+
   const features = [
     {
       icon: Brain,
       title: 'AI Strategy Consultant',
       description: 'Get comprehensive SWOT analysis, market positioning, and 30/60/90 day execution plans tailored to your business.',
       features: ['SWOT Analysis', 'Market Positioning', 'Execution Plans', 'Competitive Landscape'],
-      color: 'from-purple-500 to-purple-600'
+      color: 'from-purple-500 to-purple-600',
+      route: '/modules/strategy'
     },
     {
       icon: Calculator,
       title: 'Financial Modeler',
       description: 'Auto-generate 3-year P&L, balance sheets, cash flow projections, and burn rate analysis.',
       features: ['P&L Projections', 'Cash Flow Analysis', 'Burn Rate Tracking', 'Breakeven Analysis'],
-      color: 'from-blue-500 to-blue-600'
+      color: 'from-blue-500 to-blue-600',
+      route: '/modules/financial'
     },
     {
       icon: Target,
       title: 'Marketing Advisor',
       description: 'Create full marketing plans by budget with campaigns across SEO, paid ads, social, and email.',
       features: ['Budget-Based Plans', 'Multi-Channel Strategy', 'Ad Copy Generation', 'Campaign Timelines'],
-      color: 'from-green-500 to-green-600'
+      color: 'from-green-500 to-green-600',
+      route: '/modules/marketing'
     },
     {
       icon: FileText,
       title: 'Pitch Deck Creator',
       description: 'Generate investor-ready pitch decks and legal templates customized for your audience.',
       features: ['Investor Pitch Decks', 'Legal Templates', 'Multiple Formats', 'Custom Branding'],
-      color: 'from-orange-500 to-orange-600'
+      color: 'from-orange-500 to-orange-600',
+      route: '/modules/pitch-deck'
     },
     {
       icon: BarChart3,
       title: 'Market Research',
       description: 'AI-powered market analysis with TAM/SAM/SOM calculations and industry trend insights.',
       features: ['Market Sizing', 'Industry Trends', 'Competitor Analysis', 'Growth Opportunities'],
-      color: 'from-red-500 to-red-600'
+      color: 'from-red-500 to-red-600',
+      route: '/modules/research'
     },
     {
       icon: Users,
       title: 'Client Portal & CRM',
       description: 'Manage client relationships with AI-powered follow-ups and project timeline tracking.',
       features: ['Client Dashboard', 'AI Follow-ups', 'Document Management', 'Project Tracking'],
-      color: 'from-indigo-500 to-indigo-600'
+      color: 'from-indigo-500 to-indigo-600',
+      route: '/portal'
     }
   ]
 
@@ -143,6 +170,7 @@ export function Features() {
                   </ul>
                   <Button 
                     variant="ghost" 
+                    onClick={() => handleTryModule(feature.route)}
                     className="w-full justify-between group-hover:bg-primary/5 transition-colors"
                   >
                     Try Module
